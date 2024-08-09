@@ -26,3 +26,10 @@ management:
 logging:
   pattern:
     level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+
+audition-integration-api:
+  base-url: https://jsonplaceholder.typicode.com
+  get-posts-path: /posts
+  get-single-post-path: /posts/%s
+  get-post-comments-path: /posts/%s/comments
+  get-comments-by-post: /comments?postId=%s

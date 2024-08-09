@@ -1,12 +1,20 @@
 package com.audition.common.logging;
 
-import org.apache.commons.lang3.StringUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Map;
+import lombok.Setter;
+import lombok.SneakyThrows;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ProblemDetail;
 import org.springframework.stereotype.Component;
 
+@Setter
 @Component
 public class AuditionLogger {
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     public void info(final Logger logger, final String message) {
         if (logger.isInfoEnabled()) {
@@ -57,13 +65,13 @@ public class AuditionLogger {
         }
     }
 
+    @SneakyThrows
     private String createStandardProblemDetailMessage(final ProblemDetail standardProblemDetail) {
-        // TODO Add implementation here.
-        return StringUtils.EMPTY;
+        return objectMapper.writeValueAsString(standardProblemDetail);
     }
 
+    @SneakyThrows
     private String createBasicErrorResponseMessage(final Integer errorCode, final String message) {
-        // TODO Add implementation here.
-        return StringUtils.EMPTY;
+        return objectMapper.writeValueAsString(Map.of("errorCode", errorCode, "message", message));
     }
 }

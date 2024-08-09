@@ -6,6 +6,7 @@ import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED;
 import com.audition.common.exception.SystemException;
 import com.audition.common.logging.AuditionLogger;
 import io.micrometer.common.util.StringUtils;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 
+@Setter
 @ControllerAdvice
 public class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
 
@@ -57,8 +59,8 @@ public class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
         final HttpStatusCode statusCode) {
         final ProblemDetail problemDetail = ProblemDetail.forStatus(statusCode);
         problemDetail.setDetail(getMessageFromException(exception));
-        if (exception instanceof SystemException) {
-            problemDetail.setTitle(((SystemException) exception).getTitle());
+        if (exception instanceof SystemException systemException) {
+            problemDetail.setTitle(systemException.getTitle());
         } else {
             problemDetail.setTitle(DEFAULT_TITLE);
         }
@@ -76,7 +78,9 @@ public class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
         try {
             return HttpStatusCode.valueOf(exception.getStatusCode());
         } catch (final IllegalArgumentException iae) {
-            logger.info(LOG, ERROR_MESSAGE + exception.getStatusCode());
+            if (LOG.isErrorEnabled()) {
+                logger.error(LOG, ERROR_MESSAGE + exception.getStatusCode());
+            }
             return INTERNAL_SERVER_ERROR;
         }
     }
