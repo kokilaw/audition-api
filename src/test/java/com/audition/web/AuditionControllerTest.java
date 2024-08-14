@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.audition.common.exception.SystemException;
 import com.audition.integration.AuditionIntegrationClient;
 import com.audition.model.AuditionPost;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -20,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+@Setter
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 class AuditionControllerTest {
@@ -30,20 +32,23 @@ class AuditionControllerTest {
     @MockBean
     AuditionIntegrationClient auditionIntegrationClient;
 
+    private static final String POST_URI = "/v1/posts/";
+    private static final String APPLICATION_JSON_HEADER = "application/json";
+
     @Test
     @SneakyThrows
-    void whenValidPostIdPassed_resultsAreReturned() {
+    void whenValidPostIdPassedResultsAreReturned() {
 
-        int postId = 1;
-        AuditionPost mockedResult = AuditionPost.builder()
+        final int postId = 1;
+        final AuditionPost mockedResult = AuditionPost.builder()
             .id(postId)
             .title("sample title")
             .build();
         Mockito.when(auditionIntegrationClient.getPostById(any()))
             .thenReturn(mockedResult);
 
-        mockMvc.perform(get("/v1/posts/".concat(String.valueOf(postId)))
-                .contentType("application/json"))
+        mockMvc.perform(get(POST_URI.concat(String.valueOf(postId)))
+                .contentType(APPLICATION_JSON_HEADER))
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andExpect(jsonPath("$.id").value(postId))
             .andExpect(jsonPath("$.title").value(mockedResult.getTitle()));
@@ -54,15 +59,15 @@ class AuditionControllerTest {
     @SneakyThrows
     void givenPostIdWhenNotFoundErrorIsReturned() {
 
-        int postId = 1;
+        final int postId = 1;
         Mockito.when(auditionIntegrationClient.getPostById(any()))
             .thenThrow(new SystemException(
                 String.format(
                     "Cannot find a Post with id - %s", postId), "Resource Not Found", HttpStatus.NOT_FOUND.value()
             ));
 
-        mockMvc.perform(get("/v1/posts/".concat(String.valueOf(postId)))
-                .contentType("application/json"))
+        mockMvc.perform(get(POST_URI.concat(String.valueOf(postId)))
+                .contentType(APPLICATION_JSON_HEADER))
             .andExpect(MockMvcResultMatchers.status().isNotFound())
             .andExpect(jsonPath("$.title").value("Resource Not Found"))
             .andExpect(jsonPath("$.status").value(404))
@@ -74,12 +79,12 @@ class AuditionControllerTest {
     @SneakyThrows
     void givenPostIdWhenWhenUnknownErrorOccurredErrorIsReturned() {
 
-        int postId = 1;
+        final int postId = 1;
         Mockito.when(auditionIntegrationClient.getPostById(any()))
             .thenThrow(new SystemException(INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR.value()));
 
-        mockMvc.perform(get("/v1/posts/".concat(String.valueOf(postId)))
-                .contentType("application/json"))
+        mockMvc.perform(get(POST_URI.concat(String.valueOf(postId)))
+                .contentType(APPLICATION_JSON_HEADER))
             .andExpect(MockMvcResultMatchers.status().isInternalServerError())
             .andExpect(jsonPath("$.status").value(500))
             .andExpect(jsonPath("$.detail").value(INTERNAL_SERVER_ERROR));
@@ -90,8 +95,8 @@ class AuditionControllerTest {
     @SneakyThrows
     void givenInvalidPostIdErrorIsReturned() {
 
-        mockMvc.perform(get("/v1/posts/".concat("78da7s"))
-                .contentType("application/json"))
+        mockMvc.perform(get(POST_URI.concat("78da7s"))
+                .contentType(APPLICATION_JSON_HEADER))
             .andExpect(MockMvcResultMatchers.status().isBadRequest())
             .andExpect(jsonPath("$.status").value(400))
             .andExpect(jsonPath("$.detail").value(POST_ID_NOT_VALID_NUMBER_ERROR));

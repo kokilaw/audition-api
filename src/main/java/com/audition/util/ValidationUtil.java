@@ -22,7 +22,7 @@ public class ValidationUtil {
         }
     }
 
-    private static void isNotEmpty(String parameter, String errorMessage) {
+    private static void isNotEmpty(final String parameter, final String errorMessage) {
         if (StringUtils.isEmpty(parameter)) {
             throw new SystemException(
                 errorMessage,
