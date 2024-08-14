@@ -36,10 +36,7 @@
 
   <rule ref="category/java/bestpractices.xml">
     <exclude name="JUnitAssertionsShouldIncludeMessage"/>
-  </rule>
-
-  <rule ref="category/java/bestpractices.xml/JUnitTestsShouldIncludeAssert">
-    <exclude-pattern>.*/com/audition/web/.*</exclude-pattern>
+    <exclude name="JUnitTestsShouldIncludeAssert"/>
   </rule>
 
   <rule ref="category/java/bestpractices.xml/JUnitTestContainsTooManyAsserts">
