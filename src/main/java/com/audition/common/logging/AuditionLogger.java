@@ -16,33 +16,27 @@ public class AuditionLogger {
     @Autowired
     private ObjectMapper objectMapper;
 
-    public void info(final Logger logger, final String message) {
+    public static void info(final Logger logger, final String message, final Object... args) {
         if (logger.isInfoEnabled()) {
-            logger.info(message);
+            logger.info(message, args);
         }
     }
 
-    public void info(final Logger logger, final String message, final Object object) {
-        if (logger.isInfoEnabled()) {
-            logger.info(message, object);
-        }
-    }
-
-    public void debug(final Logger logger, final String message) {
+    public void debug(final Logger logger, final String message, final Object... args) {
         if (logger.isDebugEnabled()) {
-            logger.debug(message);
+            logger.debug(message, args);
         }
     }
 
-    public void warn(final Logger logger, final String message) {
+    public void warn(final Logger logger, final String message, final Object... args) {
         if (logger.isWarnEnabled()) {
-            logger.warn(message);
+            logger.warn(message, args);
         }
     }
 
-    public void error(final Logger logger, final String message) {
+    public void error(final Logger logger, final String message, final Object... args) {
         if (logger.isErrorEnabled()) {
-            logger.error(message);
+            logger.error(message, args);
         }
     }
 
